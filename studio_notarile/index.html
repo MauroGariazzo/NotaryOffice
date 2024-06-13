@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <style>
+        #appointments
+        {
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <form>
+            <div class="mb-3">
+                <label for="name" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="name" required>
+
+                <label for="surname" class="form-label">Cognome</label>
+                <input type="text" class="form-control" id="surname" required>
+
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" required>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="container mt-5">
+        <h2>Prenota un Appuntamento</h2>
+        <form id="appointmentForm" onsubmit="return getAppointment()">
+            <div class="form-group">
+                <label for="date">Data</label>
+                <input type="date" class="form-control" id="date" required>
+            </div>
+            <div class="form-group">
+                <label for="time">Orario</label>
+                <input type="time" class="form-control" id="time" required>
+            </div>
+
+            <button type="button" onclick="setAppointment()" class="btn btn-primary mt-3">Prenota</button>
+        </form>
+    </div>
+
+    <hr />
+
+    <div class="container mt-5">
+        <div id="appointments" class="mt-5"></div>
+    </div>
+
+
+    <script>
+
+        var id = 0;
+        var nameCustomer = document.getElementById("name");
+        var surnameCustomer = document.getElementById("surname");
+        var emailCustomer = document.getElementById("email");
+        var dateCustomer = document.getElementById("date");
+        var timeCustomer = document.getElementById("time");
+        var appointments = [];
+
+        function getAllAppointments() {
+            let divAppointments = document.getElementById("appointments");
+            divAppointments.innerHTML = "";
+
+            appointments.forEach(function (appointment) {
+                //div appuntamento
+                let divAppointment = document.createElement("div");
+                divAppointment.className = "appointment card mb-3";
+
+                //corpo della card
+                let divCardBody = document.createElement("div");
+                divCardBody.className = "card-body";
+
+                //contenuto della card
+                let cardContent = `
+                <h5 class="card-title">${appointment.nameCustomer} ${appointment.surnameCustomer}</h5>
+                <p class="card-text">Email: ${appointment.emailCustomer}</p>
+                <p class="card-text">Data: ${appointment.dateCustomer}</p>
+                <p class="card-text">Orario: ${appointment.timeCustomer}</p>
+                `;
+                divCardBody.innerHTML = cardContent;
+
+                //bottone per eliminare appuntamento
+                let removeButton = document.createElement("button");
+                removeButton.className = "btn btn-danger";
+                removeButton.textContent = "Rimuovi";
+                removeButton.onclick = function () {
+                    removeAppointment(appointment.id);
+                };
+
+                divCardBody.appendChild(removeButton);
+                divAppointment.appendChild(divCardBody);
+                divAppointments.appendChild(divAppointment);
+            });
+        }
+
+        function setAppointment() {
+            if (nameCustomer.value != "" && surnameCustomer.value != "" && emailCustomer.value != "" && dateCustomer.value != "" && timeCustomer.value != "")
+            {
+                if (!checkIfAppointmentIsAlreadyOccupied())
+                {
+                    id++;
+                    appointments.push({ id: id, nameCustomer: nameCustomer.value, surnameCustomer: surnameCustomer.value, emailCustomer: emailCustomer.value, dateCustomer: dateCustomer.value, timeCustomer: timeCustomer.value });
+                    getAllAppointments();
+                }
+
+                else
+                {
+                    alert("Giorno e orario non disponibile");
+                }
+
+            }
+
+            else {
+                alert("Compila tutti i campi");
+            }
+        }
+
+        function checkIfAppointmentIsAlreadyOccupied()
+        {
+            for (let i = 0; i < appointments.length; i++)
+            {
+                if (appointments[i].dateCustomer == dateCustomer.value && appointments[i].timeCustomer == timeCustomer.value) {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+
+        function removeAppointment(id)
+        {
+            appointments = appointments.filter(function (appointment) {
+                return appointment.id != id;
+            });
+            getAllAppointments();
+        }
+        getAllAppointments();
+    </script>
+
+</body>
+</html>
